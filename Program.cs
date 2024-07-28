@@ -23,10 +23,17 @@ builder.Services.AddCors(options =>
 var Configuration = builder.Configuration;
 
 builder.Services.AddDbContext<UserContext>(opt =>
-    opt.UseSqlite(Configuration.GetConnectionString("UsersConnection")));
+    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
 
 builder.Services.AddDbContext<MovieContext>(opt =>
-    opt.UseSqlite(Configuration.GetConnectionString("MoviesConnection")));
+    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+
+builder.Services.AddDbContext<TheatreContext>(opt =>
+    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+
+builder.Services.AddDbContext<BookingContext>(opt =>
+    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
