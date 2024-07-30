@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using MovieTicketingApplication.Models;
 
 namespace MovieTicketingApplication.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Movie")]
     [ApiController]
     public class MoviesController : ControllerBase
     {
@@ -22,13 +23,16 @@ namespace MovieTicketingApplication.Controllers
 
         // GET: api/Movies
         [HttpGet]
+        [Authorize(Roles = "Visitor,User,Admin")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
-            return await _context.Movies.ToListAsync();
+            var movies = await _context.Movies.ToListAsync();
+            return Ok(movies);
         }
 
         // GET: api/Movies/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Visitor,User,Admin")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
@@ -38,12 +42,13 @@ namespace MovieTicketingApplication.Controllers
                 return NotFound();
             }
 
-            return movie;
+            return Ok(movie);
         }
 
         // PUT: api/Movies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutMovie(int id, Movie movie)
         {
             if (id != movie.Id)
@@ -75,6 +80,7 @@ namespace MovieTicketingApplication.Controllers
         // POST: api/Movies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
             _context.Movies.Add(movie);
@@ -85,6 +91,7 @@ namespace MovieTicketingApplication.Controllers
 
         // DELETE: api/Movies/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,13 +29,16 @@ namespace MovieTicketingApplication.Controllers
 
         // GET: api/Bookings
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Booking>>> GetBookings()
         {
-            return await _bookingContext.Bookings.ToListAsync();
+            var bookings = await _bookingContext.Bookings.ToListAsync();
+            return Ok(bookings);
         }
 
         // GET: api/Bookings/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<Booking>> GetBooking(long id)
         {
             var booking = await _bookingContext.Bookings.FindAsync(id);
@@ -44,12 +48,13 @@ namespace MovieTicketingApplication.Controllers
                 return NotFound();
             }
 
-            return booking;
+            return Ok(booking);
         }
 
         // POST: api/Bookings
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<Booking>> PostBooking(Booking booking)
         {
             // Get details of user
@@ -85,6 +90,7 @@ namespace MovieTicketingApplication.Controllers
 
         // DELETE: api/Bookings/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBooking(long id)
         {
             var booking = await _bookingContext.Bookings.FindAsync(id);
@@ -98,6 +104,8 @@ namespace MovieTicketingApplication.Controllers
 
             return NoContent();
         }
+
+        // GET: api/Users/Bookings
 
         private bool BookingExists(long id)
         {
