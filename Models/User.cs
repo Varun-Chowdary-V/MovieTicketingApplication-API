@@ -17,6 +17,8 @@ public partial class User
 
     public string? Phone { get; set; }
 
+    public string Role { get; set; } = "Visitor";
+
     public DateOnly? Dob { get; set; }
 
     public string? Gender { get; set; }

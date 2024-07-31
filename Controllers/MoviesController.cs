@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieTicketingApplication.Data;
 using MovieTicketingApplication.Models;
 
 namespace MovieTicketingApplication.Controllers
@@ -23,7 +24,6 @@ namespace MovieTicketingApplication.Controllers
 
         // GET: api/Movies
         [HttpGet]
-        [Authorize(Roles = "Visitor,User,Admin")]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
             var movies = await _context.Movies.ToListAsync();
@@ -32,7 +32,6 @@ namespace MovieTicketingApplication.Controllers
 
         // GET: api/Movies/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "Visitor,User,Admin")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);

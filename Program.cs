@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-using MovieTicketingApplication.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using System.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MovieTicketingApplication.Middlewares;
+using MovieTicketingApplication.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,27 +41,6 @@ builder.Services.AddDbContext<BookingContext>(opt =>
 
 byte[] key = Encoding.ASCII.GetBytes(Configuration["JWT_KEY"]);
 
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-    .AddJwtBearer(x =>
-    {
-        x.RequireHttpsMetadata = false;
-        x.SaveToken = true;
-        x.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = Configuration["JWT_ISSUER"],
-            ValidAudience = Configuration["JWT_AUDIENCE"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
-    });
-
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -80,6 +60,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 // Enable CORS
 app.UseCors("AllowSpecificOrigin");
+
+app.UseMiddleware<RoleMiddlewareElement>();
 
 app.MapControllers();
 

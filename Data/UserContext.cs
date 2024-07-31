@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MovieTicketingApplication.Models;
 
-namespace MovieTicketingApplication.Models
+namespace MovieTicketingApplication.Data
 {
     public partial class UserContext : DbContext
     {
@@ -32,6 +33,7 @@ namespace MovieTicketingApplication.Models
                 entity.Property(e => e.LastName).HasMaxLength(255);
                 entity.Property(e => e.PasswordHashed).HasMaxLength(255);
                 entity.Property(e => e.Phone).HasMaxLength(50);
+                entity.Property(e => e.Role).HasMaxLength(10);
             });
 
             OnModelCreatingPartial(modelBuilder);

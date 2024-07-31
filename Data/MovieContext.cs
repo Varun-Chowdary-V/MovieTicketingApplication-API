@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MovieTicketingApplication.Models;
 
-namespace MovieTicketingApplication.Models
+namespace MovieTicketingApplication.Data
 {
     public partial class MovieContext : DbContext
     {
