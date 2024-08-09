@@ -99,6 +99,18 @@ namespace MovieTicketingApplication.Controllers
             return NoContent();
         }
 
+        // GET: api/Screens/5/Shows
+        [HttpGet("{id}/Shows")]
+        public async Task<ActionResult<IEnumerable<Show>>> GetShowsOfScreen(int id)
+        {
+            var shows = await _context.Shows.Where(b => b.ScreenId == id).ToListAsync();
+            if (shows == null)
+            {
+                return NoContent();
+            }
+            return Ok(shows);
+        }
+
         private bool ScreenExists(int id)
         {
             return _context.Screens.Any(e => e.Id == id);

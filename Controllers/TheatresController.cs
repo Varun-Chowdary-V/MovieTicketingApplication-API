@@ -99,6 +99,31 @@ namespace MovieTicketingApplication.Controllers
             return NoContent();
         }
 
+        // GET: api/Theatres/5/Screens
+        [HttpGet("{id}/Screens")]
+        public async Task<ActionResult<IEnumerable<Screen>>> GetScreensOfTheatre(int id)
+        {
+            var screens = await _context.Screens.Where(s => s.TheatreId == id).ToListAsync();
+            if (screens == null)
+            {
+                return NoContent();
+            }
+            return Ok(screens);
+        }
+
+        // GET: api/Theatres/filter?location=location
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<Theatre>>> GetTheatresOnLocation(string? location)
+        {
+            var theatres = await _context.Theatres.Where(t => t.Location == location).ToListAsync();
+            if (theatres == null)
+            {
+                return NoContent();
+            }
+            return Ok(theatres);
+        } 
+
+
         private bool TheatreExists(int id)
         {
             return _context.Theatres.Any(e => e.Id == id);

@@ -27,5 +27,4 @@ public partial class Movie
 
     public virtual ICollection<Screen> Screens { get; set; } = new List<Screen>();
 
-    public virtual ICollection<Show> Shows { get; set; } = new List<Show>();
 }

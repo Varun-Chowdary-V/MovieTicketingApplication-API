@@ -9,7 +9,7 @@ using MovieTicketingApplication.Models;
 
 namespace MovieTicketingApplication.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Shows")]
     [ApiController]
     public class ShowsController : ControllerBase
     {
@@ -97,6 +97,18 @@ namespace MovieTicketingApplication.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // GET: api/Shows/5/Bookings
+        [HttpGet("{id}/Bookings")]
+        public async Task<ActionResult<IEnumerable<Booking>>> GetBookingsOfShow(int id)
+        {
+            var bookings = await _context.Bookings.Where(b => b.ShowId == id).ToListAsync();
+            if (bookings == null)
+            {
+                return NoContent();
+            }
+            return Ok(bookings);
         }
 
         private bool ShowExists(int id)

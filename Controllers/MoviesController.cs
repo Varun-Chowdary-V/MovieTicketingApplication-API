@@ -99,6 +99,62 @@ namespace MovieTicketingApplication.Controllers
             return NoContent();
         }
 
+        // GET: api/Movies/5/Reviews
+        [HttpGet("{id}/Reviews")]
+        public async Task<ActionResult<IEnumerable<Review>>> GetReviewsOfMovie(int id)
+        {
+            var reviews = await _context.Reviews.Where(b => b.MovieId == id).ToListAsync();
+            if (reviews == null)
+            {
+                return NoContent();
+            }
+            return Ok(reviews);
+        }
+
+        // GET: api/Movies/5/Screens
+        [HttpGet("{id}/Screens")]
+        public async Task<ActionResult<IEnumerable<Screen>>> GetScreensOfMovie(int id)
+        {
+            var screens = await _context.Screens.Where(s => s.MovieId == id).ToListAsync();
+            if (screens == null)
+            {
+                return NoContent();
+            }
+            return Ok(screens);
+        }
+
+        // GET: api/Movies/filter?location=location&language=language&genre=genre
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<Movie>>> GetFilteredMovies(string? location, string? language, string? genre)
+        {
+            var query = _context.Movies.AsQueryable();
+
+            if (!string.IsNullOrEmpty(location))
+            {
+                query = query.Where(m => _context.Screens
+                    .Any(s => s.MovieId == m.Id && _context.Theatres.Any(t => t.Id == s.TheatreId && t.Location == location)));
+            }
+
+            if (!string.IsNullOrEmpty(language))
+            {
+                query = query.Where(m => m.Lang.Equals(language, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(genre))
+            {
+                query = query.Where(m => m.Genre.Contains(genre, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var movies = await query.ToListAsync();
+
+            if (!movies.Any())
+            {
+                return NotFound("No movies found for the specified filters.");
+            }
+
+            return Ok(movies);
+        }
+
         private bool MovieExists(int id)
         {
             return _context.Movies.Any(e => e.Id == id);

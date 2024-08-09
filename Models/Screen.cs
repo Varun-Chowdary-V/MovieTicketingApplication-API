@@ -15,10 +15,6 @@ public partial class Screen
 
     public int ScreenNumber { get; set; }
 
-    public int? ReservedSeats { get; set; }
-
-    public int TotalSeats { get; set; }
-
     public decimal? TicketFare { get; set; }
 
     public virtual Movie Movie { get; set; }

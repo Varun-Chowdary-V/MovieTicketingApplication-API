@@ -7,9 +7,7 @@ namespace MovieTicketingApplication.Models;
 
 public partial class Show
 {
-    public int Id { get; set; }
-
-    public int MovieId { get; set; }
+    public int Id { get; set; } 
 
     public int ScreenId { get; set; }
 
@@ -17,11 +15,7 @@ public partial class Show
 
     public int? AvailableSeats { get; set; }
 
-    public string Status { get; set; }
-
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-
-    public virtual Movie Movie { get; set; }
 
     public virtual Screen Screen { get; set; }
 }

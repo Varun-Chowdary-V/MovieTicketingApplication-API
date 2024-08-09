@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -99,6 +100,29 @@ namespace MovieTicketingApplication.Controllers
             return NoContent();
         }
 
+        // GET: api/Users/5/Bookings
+        [HttpGet("{id}/Bookings")]
+        public async Task<ActionResult<IEnumerable<Booking>>> GetBookingsOfUser(int id)
+        {
+            var bookings = await _context.Bookings.Where(b => b.UserId == id).ToListAsync();
+            if (bookings == null)
+            {
+                return NoContent();
+            }
+            return Ok(bookings);
+        }
+
+        // GET: api/Users/5/Reviews
+        [HttpGet("{id}/Reviews")]
+        public async Task<ActionResult<IEnumerable<Review>>> GetReviewsByUser(int id)
+        {
+            var reviews = await _context.Reviews.Where(r => r.UserId == id).ToListAsync();
+            if(reviews == null)
+            {
+                return NoContent();
+            }
+            return Ok(reviews);
+        }
 
 
         private bool UserExists(int id)

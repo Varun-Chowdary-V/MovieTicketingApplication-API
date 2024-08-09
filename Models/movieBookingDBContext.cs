@@ -125,13 +125,11 @@ public partial class movieBookingDBContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.MovieId).HasColumnName("movieId");
-            entity.Property(e => e.ReservedSeats).HasColumnName("reservedSeats");
             entity.Property(e => e.ScreenNumber).HasColumnName("screenNumber");
             entity.Property(e => e.TheatreId).HasColumnName("theatreId");
             entity.Property(e => e.TicketFare)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("ticketFare");
-            entity.Property(e => e.TotalSeats).HasColumnName("totalSeats");
 
             entity.HasOne(d => d.Movie).WithMany(p => p.Screens)
                 .HasForeignKey(d => d.MovieId)
@@ -151,19 +149,11 @@ public partial class movieBookingDBContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AvailableSeats).HasColumnName("availableSeats");
-            entity.Property(e => e.MovieId).HasColumnName("movieId");
             entity.Property(e => e.ScreenId).HasColumnName("screenId");
             entity.Property(e => e.ShowTime)
                 .HasColumnType("datetime")
                 .HasColumnName("showTime");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-
-            entity.HasOne(d => d.Movie).WithMany(p => p.Shows)
-                .HasForeignKey(d => d.MovieId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Show__movieId__5AEE82B9");
+            
 
             entity.HasOne(d => d.Screen).WithMany(p => p.Shows)
                 .HasForeignKey(d => d.ScreenId)
