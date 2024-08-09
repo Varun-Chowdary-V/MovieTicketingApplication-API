@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MovieTicketingApplication.Data;
 using MovieTicketingApplication.Models;
 
 namespace MovieTicketingApplication.Controllers
@@ -15,102 +13,95 @@ namespace MovieTicketingApplication.Controllers
     [ApiController]
     public class BookingsController : ControllerBase
     {
-        private readonly BookingContext _bookingContext;
-        private readonly UserContext _userContext;
-        private readonly MovieContext _movieContext;
-        private readonly TheatreContext _theatreContext;
+        private readonly movieBookingDBContext _context;
 
-        public BookingsController(BookingContext bookingContext, UserContext userContext, MovieContext movieContext, TheatreContext theatreContext)
+        public BookingsController(movieBookingDBContext context)
         {
-            _bookingContext = bookingContext;
-            _userContext = userContext;
-            _theatreContext = theatreContext;
-            _movieContext = movieContext;
+            _context = context;
         }
 
         // GET: api/Bookings
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Booking>>> GetBookings()
         {
-            var bookings = await _bookingContext.Bookings.ToListAsync();
-            return Ok(bookings);
+            return await _context.Bookings.ToListAsync();
         }
 
         // GET: api/Bookings/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "User")]
-        public async Task<ActionResult<Booking>> GetBooking(long id)
+        public async Task<ActionResult<Booking>> GetBooking(int id)
         {
-            var booking = await _bookingContext.Bookings.FindAsync(id);
+            var booking = await _context.Bookings.FindAsync(id);
 
             if (booking == null)
             {
                 return NotFound();
             }
 
-            return Ok(booking);
+            return booking;
+        }
+
+        // PUT: api/Bookings/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutBooking(int id, Booking booking)
+        {
+            if (id != booking.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(booking).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BookingExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
         // POST: api/Bookings
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Roles = "User")]
         public async Task<ActionResult<Booking>> PostBooking(Booking booking)
         {
-            // Get details of user
-            var user = await _userContext.Users.FindAsync(booking.Userid);
-            if (user == null)
-            {
-                return NotFound("User with Id {booking.Userid} is not found");
-            }
-
-            // Get details of movie
-            var movie = await _movieContext.Movies.FindAsync(booking.Movieid);
-            if (movie == null)
-            {
-                return NotFound("Movie with Id {booking.Movieid} is not found");
-            }
-
-            // Get details of theatre
-            var theatre = await _theatreContext.Theatres.FindAsync(booking.Theatreid);
-            if (theatre == null)
-            {
-                return NotFound("Theatre with Id {booking.Theatreid} is not found");
-            }
-
-            booking.User = user;
-            booking.Movie = movie;
-            booking.Theatre = theatre;
-
-            _bookingContext.Bookings.Add(booking);
-            await _bookingContext.SaveChangesAsync();
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBooking", new { id = booking.Id }, booking);
         }
 
         // DELETE: api/Bookings/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteBooking(long id)
+        public async Task<IActionResult> DeleteBooking(int id)
         {
-            var booking = await _bookingContext.Bookings.FindAsync(id);
+            var booking = await _context.Bookings.FindAsync(id);
             if (booking == null)
             {
                 return NotFound();
             }
 
-            _bookingContext.Bookings.Remove(booking);
-            await _bookingContext.SaveChangesAsync();
+            _context.Bookings.Remove(booking);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // GET: api/Users/Bookings
-
-        private bool BookingExists(long id)
+        private bool BookingExists(int id)
         {
-            return _bookingContext.Bookings.Any(e => e.Id == id);
+            return _context.Bookings.Any(e => e.Id == id);
         }
     }
 }

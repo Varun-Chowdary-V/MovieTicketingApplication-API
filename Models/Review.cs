@@ -5,21 +5,21 @@ using System.Collections.Generic;
 
 namespace MovieTicketingApplication.Models;
 
-public partial class Booking
+public partial class Review
 {
     public int Id { get; set; }
 
+    public int MovieId { get; set; }
+
     public int UserId { get; set; }
 
-    public int ShowId { get; set; }
+    public decimal? Rating { get; set; }
 
-    public DateTime BookingDateTime { get; set; }
+    public string Comment { get; set; }
 
-    public int Seats { get; set; }
+    public DateTime ReviewDate { get; set; }
 
-    public decimal? Price { get; set; }
-
-    public virtual Show Show { get; set; }
+    public virtual Movie Movie { get; set; }
 
     public virtual User User { get; set; }
 }

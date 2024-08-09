@@ -13,12 +13,12 @@ namespace MovieTicketingApplication.Services
         {
             _configuration = configuration;
         }
-
+        
         public string GenerateJwtToken(Models.User user)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub,user.FirstName),
+                new Claim(JwtRegisteredClaimNames.Sub,user.Fname),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                 new Claim(ClaimTypes.Role,user.Role)

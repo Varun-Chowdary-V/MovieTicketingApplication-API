@@ -2,68 +2,60 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MovieTicketingApplication.Data;
 using MovieTicketingApplication.Models;
 
 namespace MovieTicketingApplication.Controllers
 {
-    [Route("api/Users")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserContext _userContext;
-        private readonly BookingContext _bookingContext;
+        private readonly movieBookingDBContext _context;
 
-        public UsersController(UserContext context, BookingContext bookingContext)
+        public UsersController(movieBookingDBContext context)
         {
-            _userContext = context;
-            _bookingContext = bookingContext;
+            _context = context;
         }
 
         // GET: api/Users
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            var users = await _userContext.Users.ToListAsync();
-            return Ok(users);
+            return await _context.Users.ToListAsync();
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "User,Admin")]
-        public async Task<ActionResult<User>> GetUser(long id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _userContext.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return Ok(user);
+            return user;
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize(Roles = "User,Admin")]
-        public async Task<IActionResult> PutUser(long id, User user)
+        public async Task<IActionResult> PutUser(int id, User user)
         {
             if (id != user.Id)
             {
                 return BadRequest();
             }
 
-            _userContext.Entry(user).State = EntityState.Modified;
+            _context.Entry(user).State = EntityState.Modified;
 
             try
             {
-                await _userContext.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -83,62 +75,35 @@ namespace MovieTicketingApplication.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize(Roles = "User,Admin")]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            _userContext.Users.Add(user);
-            try
-            {
-                await _userContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UserExists(user.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _userContext.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _userContext.Users.Remove(user);
-            await _userContext.SaveChangesAsync();
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // GET: api/Users/5/Bookings
-        [HttpGet("{id}/Bookings")]
-        [Authorize(Roles = "User,Admin")]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetBookingsOfUser(int id)
-        {
-            var bookings = await _bookingContext.Bookings.Where(b => b.Userid == id).ToListAsync();
-            if (bookings == null)
-            {
-                return NoContent();
-            }
-            return Ok(bookings);
-        }
 
-        private bool UserExists(long id)
+
+        private bool UserExists(int id)
         {
-            return _userContext.Users.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

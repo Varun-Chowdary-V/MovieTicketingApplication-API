@@ -7,15 +7,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MovieTicketingApplication.Middlewares;
-using MovieTicketingApplication.Data;
+using MovieTicketingApplication.Models;
+using MovieTicketingApplication.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
-builder.Services.AddControllers();
 
-// Add CORS policy
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -26,20 +25,18 @@ builder.Services.AddCors(options =>
 
 var Configuration = builder.Configuration;
 
-builder.Services.AddDbContext<UserContext>(opt =>
-    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+builder.Services.AddDbContext<movieBookingDBContext>(options =>
+{
+    options.UseSqlServer(Configuration.GetConnectionString("DbConnection"));
+});
 
-builder.Services.AddDbContext<MovieContext>(opt =>
-    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
-
-builder.Services.AddDbContext<TheatreContext>(opt =>
-    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
-
-builder.Services.AddDbContext<BookingContext>(opt =>
-    opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+builder.Services.AddControllers();
 
 
-byte[] key = Encoding.ASCII.GetBytes(Configuration["JWT_KEY"]);
+
+
+// builder.Services.AddScoped<JwtService>();
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -57,11 +54,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 // Enable CORS
 app.UseCors("AllowSpecificOrigin");
 
-app.UseMiddleware<RoleMiddlewareElement>();
+app.UseAuthorization();
 
 app.MapControllers();
 

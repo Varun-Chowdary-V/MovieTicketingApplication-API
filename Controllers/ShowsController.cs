@@ -11,47 +11,47 @@ namespace MovieTicketingApplication.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController : ControllerBase
+    public class ShowsController : ControllerBase
     {
         private readonly movieBookingDBContext _context;
 
-        public MoviesController(movieBookingDBContext context)
+        public ShowsController(movieBookingDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/Movies
+        // GET: api/Shows
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
+        public async Task<ActionResult<IEnumerable<Show>>> GetShows()
         {
-            return await _context.Movies.ToListAsync();
+            return await _context.Shows.ToListAsync();
         }
 
-        // GET: api/Movies/5
+        // GET: api/Shows/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> GetMovie(int id)
+        public async Task<ActionResult<Show>> GetShow(int id)
         {
-            var movie = await _context.Movies.FindAsync(id);
+            var show = await _context.Shows.FindAsync(id);
 
-            if (movie == null)
+            if (show == null)
             {
                 return NotFound();
             }
 
-            return movie;
+            return show;
         }
 
-        // PUT: api/Movies/5
+        // PUT: api/Shows/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovie(int id, Movie movie)
+        public async Task<IActionResult> PutShow(int id, Show show)
         {
-            if (id != movie.Id)
+            if (id != show.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(movie).State = EntityState.Modified;
+            _context.Entry(show).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +59,7 @@ namespace MovieTicketingApplication.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MovieExists(id))
+                if (!ShowExists(id))
                 {
                     return NotFound();
                 }
@@ -72,36 +72,36 @@ namespace MovieTicketingApplication.Controllers
             return NoContent();
         }
 
-        // POST: api/Movies
+        // POST: api/Shows
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Movie>> PostMovie(Movie movie)
+        public async Task<ActionResult<Show>> PostShow(Show show)
         {
-            _context.Movies.Add(movie);
+            _context.Shows.Add(show);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
+            return CreatedAtAction("GetShow", new { id = show.Id }, show);
         }
 
-        // DELETE: api/Movies/5
+        // DELETE: api/Shows/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMovie(int id)
+        public async Task<IActionResult> DeleteShow(int id)
         {
-            var movie = await _context.Movies.FindAsync(id);
-            if (movie == null)
+            var show = await _context.Shows.FindAsync(id);
+            if (show == null)
             {
                 return NotFound();
             }
 
-            _context.Movies.Remove(movie);
+            _context.Shows.Remove(show);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool MovieExists(int id)
+        private bool ShowExists(int id)
         {
-            return _context.Movies.Any(e => e.Id == id);
+            return _context.Shows.Any(e => e.Id == id);
         }
     }
 }
